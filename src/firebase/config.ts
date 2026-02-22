@@ -9,7 +9,7 @@ import { getDatabase } from "firebase/database";
 const firebaseConfig = {
   apiKey: "AIzaSyDBAvWob0IID1Aac8LeyD9KJXDZaZJMn5g",
   authDomain: "qubes-3672d.firebaseapp.com",
-  databaseURL: "https://qubes-3672d-default-rtdb.asia-southeast1.firebasedatabase.app",
+  databaseURL: "https://qubes-3672d.firebaseio.com",
   projectId: "qubes-3672d",
   storageBucket: "qubes-3672d.firebasestorage.app",
   messagingSenderId: "354945774057",

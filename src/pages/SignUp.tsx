@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
-import { auth } from '../firebase/config';
+import { auth, database } from '../firebase/config';
+import { ref, set } from 'firebase/database';
 import { Link, useNavigate } from 'react-router-dom';
 import './Auth.css';
 
@@ -29,8 +30,19 @@ function SignUp() {
     setLoading(true);
 
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      navigate('/');
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      
+      // Register user in database
+      await set(ref(database, `users/${user.uid}`), {
+        email: user.email,
+        displayName: user.email?.split('@')[0] || 'User',
+        photoURL: null,
+        online: true,
+        lastSeen: Date.now()
+      });
+      
+      navigate('/dashboard');
     } catch (err: any) {
       setError(err.message || 'Failed to create account');
     } finally {
@@ -44,8 +56,19 @@ function SignUp() {
     const provider = new GoogleAuthProvider();
 
     try {
-      await signInWithPopup(auth, provider);
-      navigate('/');
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      
+      // Register user in database
+      await set(ref(database, `users/${user.uid}`), {
+        email: user.email,
+        displayName: user.displayName || user.email?.split('@')[0] || 'User',
+        photoURL: user.photoURL,
+        online: true,
+        lastSeen: Date.now()
+      });
+      
+      navigate('/dashboard');
     } catch (err: any) {
       setError(err.message || 'Failed to sign up with Google');
     } finally {

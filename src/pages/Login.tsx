@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
-import { auth } from '../firebase/config';
+import { auth, database } from '../firebase/config';
+import { ref, set } from 'firebase/database';
 import { Link, useNavigate } from 'react-router-dom';
 import './Auth.css';
 
@@ -17,8 +18,19 @@ function Login() {
     setLoading(true);
 
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      navigate('/');
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      
+      // Register user in database
+      await set(ref(database, `users/${user.uid}`), {
+        email: user.email,
+        displayName: user.displayName || user.email?.split('@')[0] || 'User',
+        photoURL: user.photoURL,
+        online: true,
+        lastSeen: Date.now()
+      });
+      
+      navigate('/dashboard');
     } catch (err: any) {
       setError(err.message || 'Failed to sign in');
     } finally {
@@ -32,8 +44,19 @@ function Login() {
     const provider = new GoogleAuthProvider();
 
     try {
-      await signInWithPopup(auth, provider);
-      navigate('/');
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      
+      // Register user in database
+      await set(ref(database, `users/${user.uid}`), {
+        email: user.email,
+        displayName: user.displayName || user.email?.split('@')[0] || 'User',
+        photoURL: user.photoURL,
+        online: true,
+        lastSeen: Date.now()
+      });
+      
+      navigate('/dashboard');
     } catch (err: any) {
       setError(err.message || 'Failed to sign in with Google');
     } finally {
