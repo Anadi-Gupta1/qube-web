@@ -79,12 +79,8 @@ function UserDirectory() {
     const existingSession = sessions.get(user.id);
     
     if (existingSession) {
-      // Session exists, navigate to it
-      if (!existingSession.handshakeComplete) {
-        navigate(`/handshake/${existingSession.sessionId}`);
-      } else {
-        navigate(`/chat/${existingSession.sessionId}`);
-      }
+      // Session exists, navigate directly to chat
+      navigate(`/chat/${existingSession.sessionId}`);
       return;
     }
 
@@ -100,7 +96,7 @@ function UserDirectory() {
         },
         createdAt: Date.now(),
         isSecured: false,
-        handshakeComplete: false
+        handshakeComplete: true
       };
 
       await set(newSessionRef, sessionData);
@@ -112,7 +108,7 @@ function UserDirectory() {
         userEmail: user.email,
         timestamp: Date.now(),
         isSecured: false,
-        handshakeComplete: false
+        handshakeComplete: true
       });
 
       // Add to other user's sessions
@@ -122,10 +118,10 @@ function UserDirectory() {
         userEmail: currentUser.email || '',
         timestamp: Date.now(),
         isSecured: false,
-        handshakeComplete: false
+        handshakeComplete: true
       });
 
-      navigate(`/handshake/${sessionId}`);
+      navigate(`/chat/${sessionId}`);
     } catch (error) {
       console.error('Error creating session:', error);
     }
@@ -134,7 +130,6 @@ function UserDirectory() {
   const getButtonText = (user: User) => {
     const session = sessions.get(user.id);
     if (!session) return 'Start Quantum Chat';
-    if (!session.handshakeComplete) return 'Complete Handshake';
     if (session.isSecured) return 'Open Secure Chat';
     return 'Open Chat';
   };
@@ -142,7 +137,6 @@ function UserDirectory() {
   const getButtonClass = (user: User) => {
     const session = sessions.get(user.id);
     if (!session) return 'start-chat';
-    if (!session.handshakeComplete) return 'handshake';
     if (session.isSecured) return 'secure';
     return 'open';
   };
