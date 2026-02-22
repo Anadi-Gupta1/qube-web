@@ -1,0 +1,25 @@
+.app-container {
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+}
+
+.app-container iframe {
+  display: block;
+  border: none;
+}
+
+/* Cover for Spline logo */
+.logo-cover {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  width: 200px;
+  height: 80px;
+  background: #000000;
+  z-index: 9999;
+  pointer-events: none;
+}
