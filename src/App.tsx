@@ -1,18 +1,23 @@
-import './App.css'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import NavBar from './components/NavBar';
+import LandingPage from './pages/LandingPage';
+import Login from './pages/Login';
+import SignUp from './pages/SignUp';
+import './App.css';
 
 function App() {
   return (
-    <div className="app-container">
-      <iframe 
-        src='https://my.spline.design/prismcoin-SrRijy1wSjFVteIEDUMfs7k8/' 
-        frameBorder='0' 
-        width='100%' 
-        height='100%'
-        title="3D Prism Coin Model"
-      />
-      <div className="logo-cover"></div>
-    </div>
-  )
+    <Router>
+      <div className="app">
+        <NavBar />
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<SignUp />} />
+        </Routes>
+      </div>
+    </Router>
+  );
 }
 
-export default App
+export default App;
