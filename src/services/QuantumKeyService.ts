@@ -1,6 +1,20 @@
+/**
+ * Bit type for quantum measurements
+ */
 export type Bit = 0 | 1;
+
+/**
+ * Basis type for BB84 protocol
+ * 
+ * @remarks
+ * X = Diagonal basis (45°/135°)
+ * + = Rectilinear basis (0°/90°)
+ */
 export type Basis = 'X' | '+';
 
+/**
+ * Response from quantum channel simulation
+ */
 export interface QuantumExchangeResponse {
   success: boolean;
   aliceBits: Bit[];
@@ -14,6 +28,15 @@ export interface QuantumExchangeResponse {
 
 const VERCEL_API_BASE = "https://qubesapi.vercel.app/api";
 
+/**
+ * QuantumKeyService
+ * 
+ * Implements BB84 Quantum Key Distribution protocol
+ * 
+ * @remarks
+ * Handles photon transmission, basis reconciliation, and key derivation
+ * Communicates with Vercel backend for quantum channel simulation
+ */
 export const QuantumKeyService = {
 
   generateAndTransmit: async (length: number = 256, eveActive: boolean = false): Promise<QuantumExchangeResponse> => {
