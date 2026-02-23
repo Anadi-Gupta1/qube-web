@@ -44,13 +44,6 @@ function UserDirectory() {
       setLoading(false);
     });
 
-    // Load current user's sessions
-    const sessionsRef = ref(database, `users/${currentUser.uid}/sessions`);
-    const unsubSessions = onValue(sessionsRef, (snapshot) => {
-      const data = snapshot.val();
-      const sessionMap = new Map<string, UserSession>();
-      if (data) {
-        Object.entries(data).forEach(([sessionId, session]: [string, any]) => {
     return () => {
       unsubUsers();
     };
@@ -74,27 +67,6 @@ function UserDirectory() {
       navigate(`/handshake/${sessionId}/${user.id}`);
     } catch (error) {
       console.error('🚨 [Lobby] Failed to start chat:', error);
-    }
-    userName: user.displayName,
-        userEmail: user.email,
-        timestamp: Date.now(),
-        isSecured: false,
-        handshakeComplete: true
-      });
-
-      // Add to other user's sessions
-      await set(ref(database, `users/${user.id}/sessions/${sessionId}`), {
-        otherUserId: currentUser.uid,
-        userName: currentUser.displayName || currentUser.email?.split('@')[0] || 'User',
-        userEmail: currentUser.email || '',
-        timestamp: Date.now(),
-        isSecured: false,
-        handshakeComplete: true
-      });
-
-      navigate(`/chat/${sessionId}`);
-    } catch (error) {
-      console.error('Error creating session:', error);
     }
   };
 
