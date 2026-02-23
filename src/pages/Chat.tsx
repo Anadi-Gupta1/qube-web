@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import SessionService, { SessionData, Message } from '../services/SessionService';
@@ -34,89 +34,12 @@ function Chat() {
   const roleRef = useRef<'alice' | 'bob' | null>(null);
   const latestSessionDataRef = useRef<SessionData | null>(null);
 
-  useEffect(() => {
-    if (!currentUser || !sessionId) return;
-
-    loadInitialData();
-
-    // Listen to session changes
-    const unsubscribe = SessionService.listenToSession(sessionId, async (data) => {
-      if (!data) return;
-
-      console.log('📡 [Chat] Session update received:', {
-        status: data.status,
-        messageCount: Object.keys(data.messages || {}).length,
-      });
-
-      // Store latest session data
-      latestSessionDataRef.current = data;
-
-      // Peer Disconnect Detection
-      if (data.status === 'initializing' && data.handshakeComplete === false) {
-        console.log('🔌 [Chat] Peer disconnected');
-        setPeerDisconnected(true);
-        setTimeout(() => {
-          navigate('/users');
-        }, 3000);
-        return;
-      }
-
-      // Background Rekeying Logic
-      if (data.status === 'rekeying') {
-        handleBackgroundRekeying(data);
-      }
-
-      // New key established after rekey
-      if (data.handshakeComplete && data.matchingIndexes && isRekeying) {
-        await deriveNewKey(data);
-      }
-
-      // Merge messages
-      await mergeMessages(data);
-    });
-
-    cleanupRef.current = unsubscribe;
-
-    return () => {
-      if (cleanupRef.current) {
-        cleanupRef.current();
-      }
-    };
-  }, [currentUser, sessionId]);
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-
-  // When session key is loaded, re-merge messages if we have session data
-  useEffect(() => {
-    if (sessionKey && latestSessionDataRef.current) {
-      console.log('🔑 [Chat] Session key loaded, re-merging messages');
-      mergeMessages(latestSessionDataRef.current);
-    }
-  }, [sessionKey]);
-
-  const loadInitialData = async () => {
-    if (!sessionId) return;
-
-    // Load session key from local storage
-    const key = await LocalStorageService.getSessionKey(sessionId);
-    setSessionKey(key);
-
-    // Load cached messages
-    const cachedMessages = await LocalStorageService.getCachedMessages(sessionId);
-    const merged: MergedMessage[] = cachedMessages.map(msg => ({
-      id: msg.id,
-      text: msg.text,
-      timestamp: msg.timestamp,
-      senderId: msg.senderId,
-      senderName: msg.senderName,
-      isDecrypted: true,
-    }));
-    setMessages(merged);
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const mergeMessages = async (sessionData: SessionData) => {
+  // Define mergeMessages with useCallback to avoid stale closures
+  const mergeMessages = useCallback(async (sessionData: SessionData) => {
     if (!sessionId) return;
 
     // If no session key yet, we can't decrypt - wait for it
@@ -197,6 +120,88 @@ function Chat() {
 
     merged.sort((a, b) => a.timestamp - b.timestamp);
     console.log('✅ [Chat] Merged messages:', merged.length, merged.map(m => ({ id: m.id, sender: m.senderName, text: m.text.substring(0, 20) })));
+    setMessages(merged);
+  }, [sessionId, sessionKey]);
+
+  useEffect(() => {
+    if (!currentUser || !sessionId) return;
+
+    loadInitialData();
+
+    // Listen to session changes
+    const unsubscribe = SessionService.listenToSession(sessionId, async (data) => {
+      if (!data) return;
+
+      console.log('📡 [Chat] Session update received:', {
+        status: data.status,
+        messageCount: Object.keys(data.messages || {}).length,
+      });
+
+      // Store latest session data
+      latestSessionDataRef.current = data;
+
+      // Peer Disconnect Detection
+      if (data.status === 'initializing' && data.handshakeComplete === false) {
+        console.log('🔌 [Chat] Peer disconnected');
+        setPeerDisconnected(true);
+        setTimeout(() => {
+          navigate('/users');
+        }, 3000);
+        return;
+      }
+
+      // Background Rekeying Logic
+      if (data.status === 'rekeying') {
+        handleBackgroundRekeying(data);
+      }
+
+      // New key established after rekey
+      if (data.handshakeComplete && data.matchingIndexes && isRekeying) {
+        await deriveNewKey(data);
+      }
+
+      // Merge messages
+      await mergeMessages(data);
+    });
+
+    cleanupRef.current = unsubscribe;
+
+    return () => {
+      if (cleanupRef.current) {
+        cleanupRef.current();
+      }
+    };
+  }, [currentUser, sessionId]);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  // When session key is loaded, re-merge messages if we have session data
+  useEffect(() => {
+    if (sessionKey && latestSessionDataRef.current) {
+      console.log('🔑 [Chat] Session key loaded, re-merging messages');
+      mergeMessages(latestSessionDataRef.current);
+    }
+  }, [sessionKey, mergeMessages]);
+
+  const loadInitialData = async () => {
+    if (!sessionId) return;
+
+    // Load session key from local storage
+    const key = await LocalStorageService.getSessionKey(sessionId);
+    setSessionKey(key);
+
+    // Load cached messages
+    const cachedMessages = await LocalStorageService.getCachedMessages(sessionId);
+    const merged: MergedMessage[] = cachedMessages.map(msg => ({
+      id: msg.id,
+      text: msg.text,
+      timestamp: msg.timestamp,
+      senderId: msg.senderId,
+      senderName: msg.senderName,
+      isDecrypted: true,
+    }));
     setMessages(merged);
   };
 
