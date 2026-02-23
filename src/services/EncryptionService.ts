@@ -1,6 +1,15 @@
 import CryptoJS from 'crypto-js';
 import { Bit } from './QuantumKeyService';
 
+/**
+ * EncryptionService
+ * 
+ * Provides AES-256-CBC encryption/decryption using quantum-derived keys
+ * 
+ * @remarks
+ * This service converts BB84-generated bit arrays into hex encryption keys
+ * and provides secure message encryption/decryption functionality
+ */
 export class EncryptionService {
   /**
    * Convert array of bits to hex string (AES-256 key)
