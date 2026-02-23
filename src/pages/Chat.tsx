@@ -18,7 +18,7 @@ interface MergedMessage {
 }
 
 function Chat() {
-  const { sessionId, peerUserId } = useParams<{ sessionId: string; peerUserId: string }>();
+  const { sessionId } = useParams<{ sessionId: string; peerUserId: string }>();
   const navigate = useNavigate();
   const { currentUser } = useAuth();
   

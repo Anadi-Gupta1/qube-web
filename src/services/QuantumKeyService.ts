@@ -46,12 +46,6 @@ export const QuantumKeyService = {
       const aliceBits: Bit[] = Array.from({ length }, () => (Math.random() > 0.5 ? 1 : 0));
       const aliceBases: Basis[] = Array.from({ length }, () => (Math.random() > 0.5 ? 'X' : '+'));
 
-      const payload = {
-        bits: aliceBits,
-        bases: aliceBases,
-        eve_present: eveActive
-      };
-
       // --- DEBUG LOGS START ---
       console.log("🚀 [QuantumLink] Attempting Connection...");
       console.log("🔗 URL:", fullUrl);
