@@ -229,6 +229,17 @@ function Chat() {
       };
       await LocalStorageService.cacheMessage(sessionId, cachedMsg);
 
+      // Immediately add to UI (optimistic update)
+      const newMsg: MergedMessage = {
+        id: message.id,
+        text: plaintext,
+        timestamp: message.timestamp,
+        senderId: message.senderId,
+        senderName: message.senderName,
+        isDecrypted: true,
+      };
+      setMessages(prev => [...prev, newMsg]);
+
       setNewMessage('');
       console.log('💬 [Chat] Message sent and cached');
     } catch (error) {
