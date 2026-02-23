@@ -1,14 +1,28 @@
 import { get, set, del, keys } from 'idb-keyval';
 
+/**
+ * CachedMessage
+ * 
+ * Represents a decrypted message stored in IndexedDB
+ */
 export interface CachedMessage {
   id: string;
-  text: string;
+  text: string; // Decrypted plaintext
   timestamp: number;
   senderId: string;
   senderName: string;
   decryptedAt: number;
 }
 
+/**
+ * LocalStorageService
+ * 
+ * Local-first message caching using IndexedDB
+ * 
+ * @remarks
+ * Implements persistent storage for decrypted messages and session keys.
+ * Part of the Perfect Forward Secrecy architecture.
+ */
 export class LocalStorageService {
   /**
    * Store a decrypted message in IndexedDB
