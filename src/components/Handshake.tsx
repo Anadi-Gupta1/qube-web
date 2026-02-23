@@ -29,7 +29,16 @@ function Handshake() {
 
     // Listen to session changes
     const unsubscribe = SessionService.listenToSession(sessionId, async (data) => {
-      if (!data) return;
+      if (!data) {
+        console.log('⚠️ [Handshake] No session data received');
+        return;
+      }
+      
+      console.log('📊 [Handshake] Session data:', { 
+        status: data.status, 
+        aliceId: data.aliceId, 
+        handshakeComplete: data.handshakeComplete 
+      });
       
       setSessionData(data);
 
@@ -315,13 +324,27 @@ function Handshake() {
 
         <div className="handshake-actions">
           {role === 'neutral' && (
-            <button
-              className="fire-btn"
-              onClick={handleFirePhotons}
-              disabled={sessionData?.aliceId !== null}
-            >
-              🚀 Fire Photons
-            </button>
+            <>
+              <button
+                className="fire-btn"
+                onClick={() => {
+                  console.log('🔘 [Fire Button] Clicked!', { 
+                    sessionData, 
+                    aliceId: sessionData?.aliceId,
+                    disabled: !sessionData || (sessionData.aliceId !== null && sessionData.aliceId !== undefined)
+                  });
+                  handleFirePhotons();
+                }}
+                disabled={!sessionData || (sessionData.aliceId !== null && sessionData.aliceId !== undefined)}
+              >
+                🚀 Fire Photons
+              </button>
+              <div style={{ fontSize: '10px', color: '#666', marginTop: '4px' }}>
+                Debug: sessionData={sessionData ? 'loaded' : 'null'}, 
+                aliceId={sessionData?.aliceId === undefined ? 'undefined' : sessionData?.aliceId || 'null'}, 
+                status={sessionData?.status || 'unknown'}
+              </div>
+            </>
           )}
 
           <button
