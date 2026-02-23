@@ -7,6 +7,7 @@ import Login from './pages/Login';
 import SignUp from './pages/SignUp';
 import Dashboard from './pages/Dashboard';
 import UserDirectory from './pages/UserDirectory';
+import Handshake from './components/Handshake';
 import Chat from './pages/Chat';
 import './App.css';
 
@@ -36,7 +37,15 @@ function App() {
               }
             />
             <Route
-              path="/chat/:sessionId"
+              path="/handshake/:sessionId/:peerUserId"
+              element={
+                <ProtectedRoute>
+                  <Handshake />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/chat/:sessionId/:peerUserId"
               element={
                 <ProtectedRoute>
                   <Chat />

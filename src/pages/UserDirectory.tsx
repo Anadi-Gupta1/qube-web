@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ref, onValue, set, push } from 'firebase/database';
+import { ref, onValue } from 'firebase/database';
 import { database } from '../firebase/config';
 import { useAuth } from '../context/AuthContext';
+import SessionService from '../services/SessionService';
 import './UserDirectory.css';
 
 interface User {
@@ -13,17 +14,10 @@ interface User {
   online?: boolean;
 }
 
-interface UserSession {
-  sessionId: string;
-  isSecured: boolean;
-  handshakeComplete: boolean;
-}
-
 function UserDirectory() {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
   const [users, setUsers] = useState<User[]>([]);
-  const [sessions, setSessions] = useState<Map<string, UserSession>>(new Map());
   const [searchQuery, setSearchQuery] = useState('');
   const [filterOnline, setFilterOnline] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -57,54 +51,31 @@ function UserDirectory() {
       const sessionMap = new Map<string, UserSession>();
       if (data) {
         Object.entries(data).forEach(([sessionId, session]: [string, any]) => {
-          sessionMap.set(session.otherUserId, {
-            sessionId,
-            isSecured: session.isSecured || false,
-            handshakeComplete: session.handshakeComplete || false
-          });
-        });
-      }
-      setSessions(sessionMap);
-    });
-
     return () => {
       unsubUsers();
-      unsubSessions();
     };
   }, [currentUser]);
 
   const handleStartChat = async (user: User) => {
     if (!currentUser) return;
 
-    const existingSession = sessions.get(user.id);
-    
-    if (existingSession) {
-      // Session exists, navigate directly to chat
-      navigate(`/chat/${existingSession.sessionId}`);
-      return;
-    }
-
-    // Create new session
     try {
-      const newSessionRef = push(ref(database, 'sessions'));
-      const sessionId = newSessionRef.key!;
+      // Check-and-Set logic: Initialize or join session
+      const action = await SessionService.initializeSession(currentUser.uid, user.id);
+      const sessionId = SessionService.getSessionId(currentUser.uid, user.id);
 
-      const sessionData = {
-        participants: {
-          [currentUser.uid]: true,
-          [user.id]: true
-        },
-        createdAt: Date.now(),
-        isSecured: false,
-        handshakeComplete: true
-      };
+      if (action === 'created') {
+        console.log('🆕 [Lobby] Starting new chat session');
+      } else {
+        console.log('🔗 [Lobby] Joining existing handshake');
+      }
 
-      await set(newSessionRef, sessionData);
-
-      // Add to current user's sessions
-      await set(ref(database, `users/${currentUser.uid}/sessions/${sessionId}`), {
-        otherUserId: user.id,
-        userName: user.displayName,
+      // Navigate to handshake screen
+      navigate(`/handshake/${sessionId}/${user.id}`);
+    } catch (error) {
+      console.error('🚨 [Lobby] Failed to start chat:', error);
+    }
+    userName: user.displayName,
         userEmail: user.email,
         timestamp: Date.now(),
         isSecured: false,
@@ -125,20 +96,6 @@ function UserDirectory() {
     } catch (error) {
       console.error('Error creating session:', error);
     }
-  };
-
-  const getButtonText = (user: User) => {
-    const session = sessions.get(user.id);
-    if (!session) return 'Start Quantum Chat';
-    if (session.isSecured) return 'Open Secure Chat';
-    return 'Open Chat';
-  };
-
-  const getButtonClass = (user: User) => {
-    const session = sessions.get(user.id);
-    if (!session) return 'start-chat';
-    if (session.isSecured) return 'secure';
-    return 'open';
   };
 
   const filteredUsers = users.filter(user => {
@@ -228,10 +185,10 @@ function UserDirectory() {
                   </div>
                 </div>
                 <button
-                  className={`action-btn ${getButtonClass(user)}`}
+                  className="action-btn start-chat"
                   onClick={() => handleStartChat(user)}
                 >
-                  {getButtonText(user)}
+                  Start Quantum Chat
                 </button>
               </div>
             ))}

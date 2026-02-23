@@ -1,0 +1,220 @@
+.handshake-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
+}
+
+.handshake-card {
+  background: white;
+  border-radius: 24px;
+  padding: 40px;
+  max-width: 600px;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.handshake-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.handshake-header h1 {
+  font-size: 2rem;
+  margin-bottom: 8px;
+  color: #1a202c;
+}
+
+.protocol-name {
+  color: #718096;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.role-indicator {
+  min-height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+
+.neutral-state {
+  text-align: center;
+}
+
+.quantum-particles {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.particle {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  animation: float 2s ease-in-out infinite;
+}
+
+.particle:nth-child(2) {
+  animation-delay: 0.3s;
+}
+
+.particle:nth-child(3) {
+  animation-delay: 0.6s;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.role-badge {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 24px;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+.role-badge.alice {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+}
+
+.role-badge.bob {
+  background: linear-gradient(135deg, #f093fb, #f5576c);
+  color: white;
+}
+
+.role-icon {
+  font-size: 1.5rem;
+}
+
+.progress-section {
+  margin-bottom: 24px;
+}
+
+.progress-bar-container {
+  height: 8px;
+  background: #e2e8f0;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #667eea, #764ba2);
+  transition: width 0.5s ease;
+}
+
+.progress-text {
+  text-align: center;
+  font-weight: 600;
+  color: #4a5568;
+}
+
+.status-message {
+  text-align: center;
+  min-height: 50px;
+  margin-bottom: 24px;
+}
+
+.status-message p {
+  color: #4a5568;
+  font-size: 0.95rem;
+}
+
+.key-display {
+  background: #f7fafc;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
+.key-label {
+  font-size: 0.85rem;
+  color: #718096;
+  margin-bottom: 8px;
+}
+
+.key-value {
+  display: block;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9rem;
+  color: #2d3748;
+  word-break: break-all;
+}
+
+.handshake-actions {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.fire-btn, .abort-btn {
+  flex: 1;
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.fire-btn {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+}
+
+.fire-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+}
+
+.fire-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.abort-btn {
+  background: #fed7d7;
+  color: #c53030;
+}
+
+.abort-btn:hover:not(:disabled) {
+  background: #fc8181;
+  color: white;
+}
+
+.handshake-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 16px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+}
+
+.info-label {
+  color: #718096;
+  font-weight: 500;
+}
+
+.info-value {
+  color: #2d3748;
+  font-family: 'Courier New', monospace;
+}
