@@ -32,6 +32,7 @@ function Chat() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const cleanupRef = useRef<(() => void) | null>(null);
   const roleRef = useRef<'alice' | 'bob' | null>(null);
+  const latestSessionDataRef = useRef<SessionData | null>(null);
 
   useEffect(() => {
     if (!currentUser || !sessionId) return;
@@ -41,6 +42,14 @@ function Chat() {
     // Listen to session changes
     const unsubscribe = SessionService.listenToSession(sessionId, async (data) => {
       if (!data) return;
+
+      console.log('📡 [Chat] Session update received:', {
+        status: data.status,
+        messageCount: Object.keys(data.messages || {}).length,
+      });
+
+      // Store latest session data
+      latestSessionDataRef.current = data;
 
       // Peer Disconnect Detection
       if (data.status === 'initializing' && data.handshakeComplete === false) {
@@ -79,6 +88,14 @@ function Chat() {
     scrollToBottom();
   }, [messages]);
 
+  // When session key is loaded, re-merge messages if we have session data
+  useEffect(() => {
+    if (sessionKey && latestSessionDataRef.current) {
+      console.log('🔑 [Chat] Session key loaded, re-merging messages');
+      mergeMessages(latestSessionDataRef.current);
+    }
+  }, [sessionKey]);
+
   const loadInitialData = async () => {
     if (!sessionId) return;
 
@@ -100,10 +117,21 @@ function Chat() {
   };
 
   const mergeMessages = async (sessionData: SessionData) => {
-    if (!sessionId || !sessionKey) return;
+    if (!sessionId) return;
+
+    // If no session key yet, we can't decrypt - wait for it
+    if (!sessionKey) {
+      console.log('⏳ [Chat] Waiting for session key before decrypting messages');
+      return;
+    }
 
     const firebaseMessages = sessionData.messages || {};
     const cachedMessages = await LocalStorageService.getCachedMessages(sessionId);
+
+    console.log('🔄 [Chat] Merging messages:', {
+      firebaseCount: Object.keys(firebaseMessages).length,
+      cachedCount: cachedMessages.length,
+    });
 
     // Create unique set of message IDs
     const allMessageIds = new Set<string>([
@@ -168,6 +196,7 @@ function Chat() {
     }
 
     merged.sort((a, b) => a.timestamp - b.timestamp);
+    console.log('✅ [Chat] Merged messages:', merged.length, merged.map(m => ({ id: m.id, sender: m.senderName, text: m.text.substring(0, 20) })));
     setMessages(merged);
   };
 
