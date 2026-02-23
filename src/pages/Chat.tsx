@@ -54,6 +54,8 @@ function Chat() {
     console.log('🔄 [Chat] Merging messages:', {
       firebaseCount: Object.keys(firebaseMessages).length,
       cachedCount: cachedMessages.length,
+      sessionKey: sessionKey ? 'present' : 'missing',
+      firebaseMessageIds: Object.keys(firebaseMessages),
     });
 
     // Create unique set of message IDs
@@ -171,7 +173,7 @@ function Chat() {
         cleanupRef.current();
       }
     };
-  }, [currentUser, sessionId]);
+  }, [currentUser, sessionId, mergeMessages, navigate, isRekeying]);
 
   useEffect(() => {
     scrollToBottom();
@@ -365,10 +367,6 @@ function Chat() {
     console.log('🔥 [Chat] Session burned, key destroyed');
 
     navigate('/users');
-  };
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   if (peerDisconnected) {
