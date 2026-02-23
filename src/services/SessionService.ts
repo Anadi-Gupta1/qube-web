@@ -78,6 +78,18 @@ export class SessionService {
 
       // Case 2: Handshake is in progress, join it
       if (data.handshakeComplete === false) {
+        // Migration: Add missing fields to old sessions
+        if (data.aliceId === undefined || data.quantumPayload === undefined) {
+          console.log('🔧 [Session] Migrating old session to new schema');
+          await update(sessionRef, {
+            aliceId: data.aliceId ?? null,
+            quantumPayload: data.quantumPayload ?? null,
+            bobBases: data.bobBases ?? null,
+            matchingIndexes: data.matchingIndexes ?? null,
+            messages: data.messages ?? {},
+          });
+        }
+        
         console.log('🔗 [Session] Joined existing handshake:', sessionId);
         return 'joined';
       }
