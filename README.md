@@ -153,8 +153,8 @@ Firebase Account
 ### Step 1️⃣: Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/qubes-web.git
-cd qubes-web
+git clone https://github.com/Anadi-Gupta1/qube-web.git
+cd qube-web
 ```
 
 ### Step 2️⃣: Install Dependencies
@@ -190,6 +190,8 @@ FIREBASE_SERVICE_ACCOUNT_KEY='{"type":"service_account",...}'
 ```
 
 > ⚠️ **Security Note**: Never commit `.env` to version control. It's already in `.gitignore`.
+>
+> ✅ **Updated**: All Firebase credentials have been moved to environment variables for enhanced security.
 
 ### Step 4️⃣: Run Development Server
 
@@ -501,8 +503,8 @@ Built with ❤️ for [Hackathon Name]
 ## 📞 Contact & Support
 
 - 📧 Email: your.email@example.com
-- 🐛 Issues: [GitHub Issues](https://github.com/yourusername/qubes-web/issues)
-- 💬 Discussions: [GitHub Discussions](https://github.com/yourusername/qubes-web/discussions)
+- 🐛 Issues: [GitHub Issues](https://github.com/Anadi-Gupta1/qube-web/issues)
+- 💬 Discussions: [GitHub Discussions](https://github.com/Anadi-Gupta1/qube-web/discussions)
 
 ---
 
@@ -512,8 +514,8 @@ Built with ❤️ for [Hackathon Name]
 
 **Star this repo if you believe in a quantum-secured future!** ⭐
 
-[![GitHub stars](https://img.shields.io/github/stars/yourusername/qubes-web?style=social)](https://github.com/yourusername/qubes-web)
-[![GitHub forks](https://img.shields.io/github/forks/yourusername/qubes-web?style=social)](https://github.com/yourusername/qubes-web/fork)
+[![GitHub stars](https://img.shields.io/github/stars/Anadi-Gupta1/qube-web?style=social)](https://github.com/Anadi-Gupta1/qube-web)
+[![GitHub forks](https://img.shields.io/github/forks/Anadi-Gupta1/qube-web?style=social)](https://github.com/Anadi-Gupta1/qube-web/fork)
 
 ---
 
